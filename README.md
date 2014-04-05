@@ -20,7 +20,7 @@ Create the file `credentials.json` in the project folder that looks like this:
 
 ```bash
 node server.js
-open http://localhost:8080
+open http://localhost:9400
 ```
 
 ## Stuff to know
