@@ -27,3 +27,6 @@ open http://localhost:8080
 
  - http://nodejs.org
  - http://bower.io
+ - http://diveintohtml5.info/geolocation.html
+ - https://github.com/andris9/nodemailer
+ - https://developers.google.com/maps/documentation/javascript/
