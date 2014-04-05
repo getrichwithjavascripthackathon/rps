@@ -11,3 +11,8 @@ npm install
 node server.js
 open http://localhost:8080
 ```
+
+## Stuff to know
+
+ - http://nodejs.org
+ - http://bower.io
