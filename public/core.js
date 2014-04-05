@@ -1,11 +1,11 @@
-
+var coord = {lat:0,lon:0}
 // === Geolocation ===
 
 function show_map(position) {
-  var latitude = position.coords.latitude;
-  var longitude = position.coords.longitude;
+  coord.lat = position.coords.latitude;
+  coord.lon = position.coords.longitude;
   console.log(position);
-  alert(latitude + ", " + longitude);
+  map.initialize();
 }
 
 function get_location() {
@@ -16,4 +16,18 @@ function get_location() {
   }
 }
 
-get_location();
+
+
+// === Map ===
+  var map = {};
+//  var map.coord = {lat:position.coords.latitude,lon:position.coords.longitude}
+  map.initialize = function() {
+    var mapOptions = {
+      center: new google.maps.LatLng(coord.lat,coord.lon),
+      zoom: 15
+    };
+    var map = new google.maps.Map(document.getElementById("map-canvas"),
+        mapOptions);
+  }
+  google.maps.event.addDomListener(window, 'load', get_location());
+
