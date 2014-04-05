@@ -2,7 +2,7 @@
   "name": "rps",
   "version": "0.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -13,5 +13,8 @@
   "bugs": {
     "url": "https://github.com/getrichwithjavascripthackathon/rps/issues"
   },
-  "homepage": "https://github.com/getrichwithjavascripthackathon/rps"
+  "homepage": "https://github.com/getrichwithjavascripthackathon/rps",
+  "dependencies": {
+    "express": "^3.5.1"
+  }
 }
