@@ -5,7 +5,7 @@ function show_map(position) {
   coord.lat = position.coords.latitude;
   coord.lon = position.coords.longitude;
   console.log(position);
-  map.initialize();
+  initialize();
 }
 
 function get_location() {
@@ -19,15 +19,23 @@ function get_location() {
 
 
 // === Map ===
-  var map = {};
-//  var map.coord = {lat:position.coords.latitude,lon:position.coords.longitude}
-  map.initialize = function() {
+ var icons = ['/img/rock-small.png','/img/paper-small.png','/img/scissors-small.png']
+ var initialize = function() {
     var mapOptions = {
       center: new google.maps.LatLng(coord.lat,coord.lon),
-      zoom: 15
+      zoom: 18
     };
     var map = new google.maps.Map(document.getElementById("map-canvas"),
         mapOptions);
-  }
+    var marker = new google.maps.Marker({
+      position: new google.maps.LatLng(coord.lat,coord.lon),
+      map: map,
+      title:"Hello World!",
+      icon:icons[Math.floor(Math.random()*icons.length)],
+      size:new google.maps.Size(20, 32)
+    });
+}
+ 
+  
   google.maps.event.addDomListener(window, 'load', get_location());
 
