@@ -17,13 +17,13 @@
   </script>
   <script src="core.js"></script>
 </head>
-<body>
+<body ng-controller="FindMatchController">
  
   <p>Name: RockMAN Score: 150</p>
   
   <div id="map-canvas" ng-controller="MarkersController"></div>
 
-  <button id="find-match" type="button" class="btn btn-warning" >Find Match</button>
-
+  <button id="find-match" type="button" class="btn btn-warning" ng-click="didClickButton()" ng-hide="findingMatch">Find Match</button>
+  <p ng-show="findingMatch">Finding Match...</p>
 </body>
 </html>     

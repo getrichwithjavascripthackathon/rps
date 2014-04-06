@@ -40,7 +40,7 @@ function get_location() {
 
 
 function MarkersController($http) {
-	console.log("Setting up controller")
+	console.log("Setting up controller");
 //	var bounds = new google.maps.LatLngBounds();
 
   function showMap(position) {
@@ -79,3 +79,10 @@ function MarkersController($http) {
     navigator.geolocation.getCurrentPosition(showMap);
   } 
 }
+
+function FindMatchController($scope){
+  $scope.didClickButton = function (){
+    $scope.findingMatch = true;
+  };
+}
+
