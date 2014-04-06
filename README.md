@@ -5,15 +5,11 @@
 npm install
 ```
 
-Create the file `credentials.json` in the project folder that looks like this:
+Set the credential environemtn variables:
 
-```json
-{
-  "gmail": {
-    "user": "gmail-user-to-send-mail-as@gmail.com",
-    "password": "gmail-user's-password"
-  }
-}
+```bash
+export GMAIL__USER="gmail-user-to-send-mail-as@gmail.com"
+export GMAIL__PASSWORD="gmail-user's-password"
 ```
 
 ## Running the project

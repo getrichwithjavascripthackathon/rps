@@ -1,7 +1,12 @@
 var express   = require('express');
 var webserver = express();
 var config = require('./config.json');
-var credentials = require('./credentials.json');
+var credentials = {
+  gmail: {
+    user: process.env.GMAIL__USER,
+    password: process.env.GMAIL__PASSWORD
+  }
+};
 
 var webserverPort = config.webserver.port;
 webserver.configure(function() {
