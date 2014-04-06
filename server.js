@@ -21,16 +21,18 @@ webserver.get("/matches.json", function(req, res) {
     ])
 });
 
-model.createPlayer("U1");
+model.createPlayer("U1", "u1@example.com");
 
 webserver.post('/match_requests', function(req, res) {
-  model.requestMatch("U1");
+  model.requestGame("u1@example.com");
   res.send(200);
 });
 
 webserver.get('/match_requests', function(req, res) {
   console.log("Getting requested matches");
-  res.send(model.getPlayersRequestingGames());
+  model.getPlayersRequestingGames(function(requests) {
+    res.send(requests);
+  });
 });
 
 webserver.listen(webserverPort);
@@ -64,23 +66,4 @@ transport.sendMail(mailOptions, function(error, response){
     }
 
     transport.close();
-});
-
-
-var mongoose = require('mongoose');
-mongoose.connect(process.env.MONGOHQ_URL || 'mongodb://localhost/rps_dev');
-
-
-var User = mongoose.model('User', {
-	name : String,
-  score: Number,
-  wins: Number,
-  losses: Number,
-  position: { lat: Number, lon: Number }
-});
-
-var rockman = new User({name: "RockMAN", score: 0, wins: 0, losses: 0});
-
-rockman.save(function (err, rockman) {
-  if (err) return console.error(err);
 });

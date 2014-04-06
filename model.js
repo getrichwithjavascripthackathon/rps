@@ -1,16 +1,22 @@
-var playerData = {};
-var playersRequestingGames = [];
+var mongoose = require('mongoose');
+mongoose.connect(process.env.MONGOHQ_URL || 'mongodb://localhost/rps_dev');
+
+var Player = mongoose.model('Player', {
+	name : String,
+	email: {type: String, required: true},
+	score: Number,
+	wins: Number,
+	losses: Number,
+	position: { lat: Number, lng: Number }
+});
+
+var RequestedGame = mongoose.model('RequestedGame', {
+	player: {type: mongoose.Schema.ObjectId, ref: 'Player', required: true},
+	requestedAt: {type: Date, required: true, default: Date}
+});
+
 var activeGames = {};
 var completedGames = {};
-
-function Player(name){
-	this.name = name;
-	this.score = 0;
-	this.wins = 0;
-	this.losses = 0;
-	this.currentGame = false;
-	this.position = {};
-}
 
 function Game(p1,p2){
   this.players = [p1,p2];
@@ -18,26 +24,40 @@ function Game(p1,p2){
   this.results = [];
 }
 
-var nextId = 1;
 var nextGame = 1;
 
-exports.createPlayer = function(userName) {
-	console.log("createPlayer", userName);
-	playerData['U' + nextId] = new Player(userName)
-	nextId++;
+exports.createPlayer = function(name, email) {
+	console.log("createPlayer", name, email);
+
+	var player = new Player({name: name, email: email, score: 0, wins: 0, losses: 0});
+
+	player.save(function (err, savedPlayer) {
+		if (err) return console.error(err);
+		console.log("saved player", savedPlayer);
+	});
 }
 
-exports.requestMatch = function(userId){
-	console.log("requestMatch", userId);
-	if(playersRequestingGames.length) {
-		startMatch(userId,playersRequestingGames.shift());
-	} else {
-		playersRequestingGames.push(userId);
-	}
+exports.requestGame = function(playerEmail){
+	console.log("requestGame", playerEmail);
+
+	// TODO: bring back this logic
+	// if(playersRequestingGames.length) {
+	// 	startMatch(userId,playersRequestingGames.shift());
+	// } else {
+	  Player.find({email: playerEmail}, function(err, players) {
+			var request = new RequestedGame({player: players[0]});
+			request.save(function(err, savedRequest) {
+				if (err) return console.error(err);
+				console.log("saved request", savedRequest);
+			});
+		});
+	// }
 }
 
-exports.getPlayersRequestingGames = function() {
-	return playersRequestingGames;
+exports.getPlayersRequestingGames = function(done) {
+	return RequestedGame.find(function(err, requests) {
+		done(requests);
+	});
 }
 
 function startMatch(p1, p2){
