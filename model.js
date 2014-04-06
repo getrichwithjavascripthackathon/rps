@@ -1,29 +1,3 @@
- 
-var playerData = {
-  "U123": { name: "RockMAN", score: 150, wins: 1, losses: 200, currentGame: false, position: {} },
-  "U888": { name: "Jenny", score: 2, wins: 1, losses: 0, currentGame: "G1", position: {} },
-  "U007": { name: "Johnny", score: 0, wins: 0, losses: 0, currentGame: "G2", position: {} }
-};
-
-var playersRequestingGames = [
-  "U555", "U007"
-]; 
-
-var activeGames = {
-  "G1": { players: ["U555", "U888"], found: true, results: {"U555": "U555", "U888": "U555"} },
-  "G2": { players: ["U123", "U007"], found: false, results: {} }
-};
-  
-var completedGames = {
-  "G1": { players: ["U555", "U888"], results: {"U555": "U555", "U888": "U555"} }
-};
-
-
-
-//  === functions ===
-
-
-
 var playerData = {};
 var playersRequestingGames = [];
 var activeGames = {};
