@@ -119,7 +119,7 @@ app.controller('FindMatchController', function($scope, $http, Facebook) {
 
   $scope.didClickButton = function () {
     $scope.findingMatch = true;
-    $http.post('/match_requests')
+    $http.post('/api/v1/match_requests')
     .success(function(data) {
 
     }).error(function(err) {

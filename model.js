@@ -26,14 +26,21 @@ function Game(p1,p2){
 
 var nextGame = 1;
 
-exports.createPlayer = function(name, email) {
+exports.findOrCreatePlayer = function(name, email, done) {
 	console.log("createPlayer", name, email);
 
-	var player = new Player({name: name, email: email, score: 0, wins: 0, losses: 0});
+	Player.find({ email: email }, function(err, players) {
+		if (players.length) {
+			done(players[0]);
+		} else {
+			var player = new Player({name: name, email: email, score: 0, wins: 0, losses: 0});
 
-	player.save(function (err, savedPlayer) {
-		if (err) return console.error(err);
-		console.log("saved player", savedPlayer);
+			player.save(function (err, savedPlayer) {
+				if (err) return console.error(err);
+				console.log("saved player", savedPlayer);
+				done(savedPlayer);
+			});
+		}
 	});
 }
 

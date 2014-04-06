@@ -21,14 +21,18 @@ webserver.get("/matches.json", function(req, res) {
     ])
 });
 
-model.createPlayer("U1", "u1@example.com");
+webserver.get('/api/v1/login', function(req, res) {
+  model.findOrCreatePlayer(req.query.name, req.query.email, function(player) {
+    res.send(player);
+  });
+});
 
-webserver.post('/match_requests', function(req, res) {
+webserver.post('/api/v1/match_requests', function(req, res) {
   model.requestGame("u1@example.com");
   res.send(200);
 });
 
-webserver.get('/match_requests', function(req, res) {
+webserver.get('/api/v1/match_requests', function(req, res) {
   console.log("Getting requested matches");
   model.getPlayersRequestingGames(function(requests) {
     res.send(requests);
