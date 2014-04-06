@@ -1,6 +1,5 @@
 var express   = require('express');
 var webserver = express();
-var config = require('./config.json');
 var credentials = {
   gmail: {
     user: process.env.GMAIL__USER,
@@ -8,7 +7,7 @@ var credentials = {
   }
 };
 
-var webserverPort = config.webserver.port;
+var webserverPort = process.env.PORT || 9400;
 webserver.configure(function() {
 	webserver.use(express.static(__dirname + '/public'));
 	webserver.use(express.logger('dev'));
