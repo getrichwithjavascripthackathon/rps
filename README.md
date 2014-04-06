@@ -26,3 +26,6 @@ open http://localhost:9400
  - http://diveintohtml5.info/geolocation.html
  - https://github.com/andris9/nodemailer
  - https://developers.google.com/maps/documentation/javascript/
+ - http://expressjs.com/guide.html
+ - http://mongoosejs.com/
+ - http://jasmine.github.io/2.0/introduction.html
