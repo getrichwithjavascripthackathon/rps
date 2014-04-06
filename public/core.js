@@ -36,12 +36,10 @@ function get_location() {
 }
  
   
-//  google.maps.event.addDomListener(window, 'load', get_location());
-
 
 function MarkersController($http) {
 	console.log("Setting up controller")
-//	var bounds = new google.maps.LatLngBounds();
+	var bounds = new google.maps.LatLngBounds();
 
   function showMap(position) {
     coord.lat = position.coords.latitude;
@@ -58,10 +56,10 @@ function MarkersController($http) {
       map: map,
       title:"Hello World!",
       icon:icons[Math.floor(Math.random()*icons.length)],
-    }
-//    bounds.extend(marker.position);
-    );
-
+    });
+    
+    bounds.extend(marker.position);
+		
 		$http.get("/matches.json")
 	    .success(function(data) {
 	      console.log(data);
@@ -72,7 +70,9 @@ function MarkersController($http) {
 	          title: person.name,
 	          icon:icons[Math.floor(Math.random()*icons.length)],
 	        });
+	        bounds.extend(marker.position);
 	      });
+	      map.fitBounds(bounds);
 	    })
   }
   if (Modernizr.geolocation) {
