@@ -9,6 +9,12 @@ webserver.configure(function() {
 	webserver.use(express.logger('dev'));
 });
 
+webserver.get("/matches.json", function(req, res) {
+    res.send([
+      {name: "Rockman", lat: 37.7619029, lng: -122.4151263},
+      {name: "Papercutter", lat: 37.7602744, lng: -122.4101267}
+    ])
+})
 webserver.listen(webserverPort);
 console.log("RPSing on port http://localhost:" + webserverPort);
 
