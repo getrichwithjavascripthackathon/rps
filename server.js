@@ -51,3 +51,22 @@ transport.sendMail(mailOptions, function(error, response){
 
     transport.close();
 });
+
+
+var mongoose = require('mongoose');
+mongoose.connect(process.env.MONGOHQ_URL || 'mongodb://localhost/rps_dev');
+
+
+var User = mongoose.model('User', {
+	name : String,
+  score: Number,
+  wins: Number,
+  losses: Number,
+  position: { lat: Number, lon: Number }
+});
+
+var rockman = new User({name: "RockMAN", score: 0, wins: 0, losses: 0});
+
+rockman.save(function (err, rockman) {
+  if (err) return console.error(err);
+});
