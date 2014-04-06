@@ -1,11 +1,12 @@
 <!doctype html>
-<html lang="en" ng-app>
+<html lang="en" ng-app="BoShamRowApp">
 <head>
   <meta charset="utf-8">
   <title>BoShamRow</title>
   <link rel="stylesheet" href="bootstrap.min.css">
   <script src="bower_components/jquery/dist/jquery.min.js"></script>
   <script src="bower_components/angular/angular.js"></script>
+  <script src="bower_components/angular-facebook/lib/angular-facebook.js"></script>
   <script src="bower_components/modernizr/modernizr.js"></script>
   <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
   <meta name="viewport" content="initial-scale=1.0,user-scalable=no" />
@@ -30,7 +31,7 @@
     <div id="login-panel" class="panel panel-default">
       <div class="panel-body">
         <form>
-          <button class="btn btn-default" href="" ng-click="didLogin()">Login as RockMAN</button>
+          <button class="btn btn-default" href="" ng-click="login()">Login as RockMAN</button>
         </form>
       </div>
     </div>
@@ -41,7 +42,7 @@
       <div id="map-canvas" ng-controller="MarkersController"></div>
     </div>
     <div id="map-header">
-      <p>Name: RockMAN Score: 150</p>
+      <p>Name: {{ user.name }} Score: {{ user.score }}</p>
 
       <div ng-show="errorMessage" class="alert alert-dismissable alert-danger">
         <strong>Oh snap!</strong> {{ errorMessage }}

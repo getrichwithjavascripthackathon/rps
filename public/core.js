@@ -17,6 +17,11 @@ function get_location() {
 }
 
 
+var app = angular.module('BoShamRowApp', ['facebook']);
+
+app.config(['FacebookProvider', function(FacebookProvider) {
+     FacebookProvider.init('1417732778486013');
+}]);
 
 function MarkersController($http) {
   var icons = ['/img/rock-small.png','/img/paper-small.png','/img/scissors-small.png']
@@ -60,13 +65,57 @@ function MarkersController($http) {
   }
 }
 
-function FindMatchController($scope, $http) {
+app.controller('FindMatchController', function($scope, $http, Facebook) {
   $scope.showLogin = true;
 
-  $scope.didLogin = function() {
-    $scope.showLogin = false;
-    $scope.showMap = true;
+  // Here, usually you should watch for when Facebook is ready and loaded
+  $scope.$watch(function() {
+    return Facebook.isReady(); // This is for convenience, to notify if Facebook is loaded and ready to go.
+  }, function(newVal) {
+    if (newVal) {
+      console.log("facebook ready: ", newVal);
+      $scope.getLoginStatus();
+    }
+    // $scope.facebookReady = true; // You might want to use this to disable/show/hide buttons and else
+  });
+
+  // From now on you can use the Facebook service just as Facebook api says
+  // Take into account that you will need $scope.$apply when inside a Facebook function's scope and not angular
+  $scope.login = function() {
+    Facebook.login(function(response) {
+      console.log("Finished FB login");
+      $scope.getLoginStatus();
+    });
   };
+
+  $scope.getLoginStatus = function() {
+    console.log("start get FB status");
+    Facebook.getLoginStatus(function(response) {
+      console.log("end get FB status", response);
+      if(response.status == 'connected') {
+        $scope.$apply(function() {
+          $scope.showLogin = false;
+          $scope.showMap = true;
+          $scope.me();
+        });
+      }
+      else {
+        $scope.$apply(function() {
+          $scope.showLogin = true;
+          $scope.showMap = false;
+        });
+      }
+    })};
+
+    $scope.me = function() {
+      Facebook.api('/me', function(response) {
+        $scope.$apply(function() {
+          // Here you could re-check for user status (just in case)
+          $scope.user = response;
+          $scope.user.score = 150;
+        });
+      });
+    };
 
   $scope.didClickButton = function () {
     $scope.findingMatch = true;
@@ -78,4 +127,4 @@ function FindMatchController($scope, $http) {
       $scope.errorMessage = "Sorry, we can't find a match right now.";
     });
   };
-}
+});
