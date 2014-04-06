@@ -34,14 +34,11 @@ function get_location() {
       icon:icons[Math.floor(Math.random()*icons.length)],
     });
 }
- 
-  
+
+
 
 function MarkersController($http) {
-
-	console.log("Setting up controller")
 	var bounds = new google.maps.LatLngBounds();
-
 
   function showMap(position) {
     coord.lat = position.coords.latitude;
@@ -56,12 +53,11 @@ function MarkersController($http) {
     var marker = new google.maps.Marker({
       position: new google.maps.LatLng(coord.lat,coord.lon),
       map: map,
-      title:"Hello World!",
       icon:icons[Math.floor(Math.random()*icons.length)],
     });
-    
+
     bounds.extend(marker.position);
-		
+
 		$http.get("/matches.json")
 	    .success(function(data) {
 	      console.log(data);
@@ -79,12 +75,18 @@ function MarkersController($http) {
   }
   if (Modernizr.geolocation) {
     navigator.geolocation.getCurrentPosition(showMap);
-  } 
+  }
 }
 
-function FindMatchController($scope){
-  $scope.didClickButton = function (){
+function FindMatchController($scope, $http){
+  $scope.didClickButton = function () {
     $scope.findingMatch = true;
+    $http.post('/match_requests')
+    .success(function(data) {
+
+    }).error(function(err) {
+      $scope.findingMatch = false;
+      $scope.errorMessage = "Sorry, we can't find a match right now.";
+    });
   };
 }
-

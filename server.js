@@ -18,7 +18,13 @@ webserver.get("/matches.json", function(req, res) {
       {name: "Rockman", lat: 37.7619029, lng: -122.4151263},
       {name: "Papercutter", lat: 37.7602744, lng: -122.4101267}
     ])
-})
+});
+
+webserver.post('/match_requests', function(req, res) {
+  console.log("Requested match", req, res);
+  res.send(404);
+});
+
 webserver.listen(webserverPort);
 console.log("RPSing on port http://localhost:" + webserverPort);
 
