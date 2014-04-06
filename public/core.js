@@ -18,26 +18,8 @@ function get_location() {
 
 
 
-// === Map ===
- var icons = ['/img/rock-small.png','/img/paper-small.png','/img/scissors-small.png']
- var initialize = function() {
-    var mapOptions = {
-      center: new google.maps.LatLng(coord.lat,coord.lon),
-      zoom: 18
-    };
-    var map = new google.maps.Map(document.getElementById("map-canvas"),
-        mapOptions);
-    var marker = new google.maps.Marker({
-      position: new google.maps.LatLng(coord.lat,coord.lon),
-      map: map,
-      title:"Hello World!",
-      icon:icons[Math.floor(Math.random()*icons.length)],
-    });
-}
-
-
-
 function MarkersController($http) {
+  var icons = ['/img/rock-small.png','/img/paper-small.png','/img/scissors-small.png']
 	var bounds = new google.maps.LatLngBounds();
 
   function showMap(position) {
@@ -78,7 +60,14 @@ function MarkersController($http) {
   }
 }
 
-function FindMatchController($scope, $http){
+function FindMatchController($scope, $http) {
+  $scope.showLogin = true;
+
+  $scope.didLogin = function() {
+    $scope.showLogin = false;
+    $scope.showMap = true;
+  };
+
   $scope.didClickButton = function () {
     $scope.findingMatch = true;
     $http.post('/match_requests')
