@@ -1,3 +1,4 @@
+var model = require('./model');
 var express   = require('express');
 var webserver = express();
 var credentials = {
@@ -20,9 +21,16 @@ webserver.get("/matches.json", function(req, res) {
     ])
 });
 
+model.createPlayer("U1");
+
 webserver.post('/match_requests', function(req, res) {
-  console.log("Requested match", req, res);
-  res.send(404);
+  model.requestMatch("U1");
+  res.send(200);
+});
+
+webserver.get('/match_requests', function(req, res) {
+  console.log("Getting requested matches");
+  res.send(model.getPlayersRequestingGames());
 });
 
 webserver.listen(webserverPort);

@@ -21,17 +21,23 @@ function Game(p1,p2){
 var nextId = 1;
 var nextGame = 1;
 
-function createPlayer(userName) {
+exports.createPlayer = function(userName) {
+	console.log("createPlayer", userName);
 	playerData['U' + nextId] = new Player(userName)
 	nextId++;
 }
 
-function requestMatch(userId){
+exports.requestMatch = function(userId){
+	console.log("requestMatch", userId);
 	if(playersRequestingGames.length) {
 		startMatch(userId,playersRequestingGames.shift());
 	} else {
 		playersRequestingGames.push(userId);
 	}
+}
+
+exports.getPlayersRequestingGames = function() {
+	return playersRequestingGames;
 }
 
 function startMatch(p1, p2){
