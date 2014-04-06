@@ -35,8 +35,11 @@ function requestMatch(userId){
 }
 
 function startMatch(p1, p2){
-	activeGames['g' + nextGame] = new Game(p1,p2);
+	var gameId = 'g' + nextGame;
+	activeGames[gameId] = new Game(p1,p2);
 	nextGame++;
+	playerData[p1].currentGame = gameId;
+	playerData[p2].currentGame = gameId;
 }
 
 function playersFound(gameId){
@@ -56,6 +59,7 @@ function validateResults(game){
 
 function reportMatch(gameId,userId,winner){
   activeGames[gameId].results.push({judge: userId, verdict: winner});
+  playerData[userId].currentGame = false;
   if(activeGames[gameId].results.length === 2){
   	completedGames[gameId] = activeGames[gameId];
   	delete activeGames[gameId];
