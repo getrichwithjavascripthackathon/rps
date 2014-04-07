@@ -5,7 +5,6 @@ angular.module('BoShamRowApp')
   Geolocation.start();
 
   $scope.$on('currentPosition', function(_, position) {
-    console.log("got position in UpdateLocationController", position);
     Login.getPlayerEmail().then(function(playerEmail) {
       $http.post('/api/v1/position', {
         email: playerEmail,
@@ -15,5 +14,5 @@ angular.module('BoShamRowApp')
         }
       });
     });
-  })
+  });
 });

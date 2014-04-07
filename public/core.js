@@ -28,10 +28,8 @@ app.controller('MarkersController', function($scope, $http) {
 	var bounds = new google.maps.LatLngBounds();
 
   function showMap(_, position) {
-    console.log("got position in MarkersController", position);
     coord.lat = position.coords.latitude;
     coord.lon = position.coords.longitude;
-    console.log(position);
     var mapOptions = {
       center: new google.maps.LatLng(coord.lat,coord.lon),
       zoom: 18
