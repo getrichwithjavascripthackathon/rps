@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "./node_modules/.bin/jasmine-node test"
+    "test": "./node_modules/.bin/jasmine-node --forceexit test"
   },
   "repository": {
     "type": "git",
@@ -21,6 +21,7 @@
     "mongoose": "^3.8.8"
   },
   "devDependencies": {
-    "jasmine-node": "^1.14.3"
+    "jasmine-node": "^1.14.3",
+    "mockgoose": "^1.8.1"
   }
 }
