@@ -62,6 +62,10 @@
       <div ng-show="errorMessage" class="alert alert-dismissable alert-danger">
         <strong>Oh snap!</strong> {{ errorMessage }}
       </div>
+
+      <div ng-show="opponent" class="alert alert-info">
+        You are matched with {{ opponent.name }}
+      </div>
     </div>
     <div id="map-footer">
       <button id="find-match" type="button" class="btn btn-warning" ng-click="didClickButton()" ng-hide="findingMatch">Find Match</button>

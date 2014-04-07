@@ -1,4 +1,4 @@
-angular.module('BoShamRowApp').controller('FindMatchController', function($scope, $http, Facebook, Login) {
+angular.module('BoShamRowApp').controller('FindMatchController', function($scope, $http, Facebook, Login, $timeout) {
   $scope.show = "loading";
   $scope.loadingMessage = "Waiting for Facebook";
 
@@ -13,6 +13,19 @@ angular.module('BoShamRowApp').controller('FindMatchController', function($scope
     }
     // $scope.facebookReady = true; // You might want to use this to disable/show/hide buttons and else
   });
+
+  function fetchGameStatus() {
+    Login.getPlayerEmail().then(function(playerEmail) {
+      $http.get('/api/v1/active_games', { params: {email: playerEmail}})
+      .success(function(result) {
+        if (result.length > 0) {
+          $scope.opponent = result[0];
+        } else {
+          $timeout(fetchGameStatus, 2000);
+        }
+      });
+    });
+  }
 
   // From now on you can use the Facebook service just as Facebook api says
   // Take into account that you will need $scope.$apply when inside a Facebook function's scope and not angular
@@ -41,12 +54,14 @@ angular.module('BoShamRowApp').controller('FindMatchController', function($scope
 
   $scope.didClickButton = function () {
     $scope.findingMatch = true;
-    $http.post('/api/v1/match_requests')
-    .success(function(data) {
-
-    }).error(function(err) {
-      $scope.findingMatch = false;
-      $scope.errorMessage = "Sorry, we can't find a match right now.";
+    Login.getPlayerEmail().then(function(playerEmail) {
+      $http.post('/api/v1/match_requests', null, {params: { email: playerEmail} })
+      .success(function(data) {
+        fetchGameStatus();
+      }).error(function(err) {
+        $scope.findingMatch = false;
+        $scope.errorMessage = "Sorry, we can't find a match right now.";
+      });
     });
   };
 });
