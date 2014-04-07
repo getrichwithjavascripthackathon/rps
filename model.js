@@ -23,7 +23,12 @@ var ActiveGame = mongoose.model('ActiveGame',{
 	results: Array
 });
 
-var completedGames = {};
+var CompletedGame = mongoose.model('CompletedGame',{
+	players:[{type: mongoose.Schema.ObjectId, ref: 'Player', required: true}],
+	results: String,
+	position: {lat: Number, lng: Number}
+});
+
 
 exports.findOrCreatePlayer = function(name, email, done) {
 	console.log("createPlayer", name, email);
@@ -115,32 +120,50 @@ exports.getPlayersRequestingGames = function(done) {
 	});
 }
 
+exports.reportMatch = function(email,iWon){
+	Player.find({email:email},function(err,players){
+		if(err) return console.err(err);
+		var myId = players[0].id;
+		ActiveGame.find({players: myId},function(err,games){
+			if(err) return console.err(err);
+			games[0].results.push({user:myId,iWon:iWon});
+			games[0].save(function(err,updatedResults){
+				if (err) return console.error(err);
+				console.log("updated results", updatedResults);
+			});
+
+			if(games[0].results.length == 2){
+				var completedGame = new CompletedGame({players: games[0].players, results: validateResults(games[0].results)}) 
+				completedGame.save(function(err,completedGame){
+					console.log('Game completed',completedGame);
+				});
+				ActiveGame.remove({_id: games[0]._id});
+			}
+		});
+	});
+}
+
+function validateResults(results){
+	if(results[0].iWon !== results[1].iWon){
+		var winner = results[0].iWon ? results[0].user : results[1].user;
+	}	else{
+		var winner = null;
+	}
+	return winner;
+}
+
+
+
+
+
+
 function playersFound(gameId){
 	activeGames[gameId].found = true;
 }
 
-function validateResults(game){
-  if(game.results[0].verdict === game.results[1].verdict){
-  	var verdict = game.results[0].verdict;
-  }  else {
-  	var verdict = null;
-  }
-  delete game.results;
-  game['results'] = verdict;
-  return verdict;
-}
 
-function reportMatch(gameId,userId,winner){
-  activeGames[gameId].results.push({judge: userId, verdict: winner});
-  playerData[userId].currentGame = false;
-  if(activeGames[gameId].results.length === 2){
-  	completedGames[gameId] = activeGames[gameId];
-  	delete activeGames[gameId];
-    if(validateResults(completedGames[gameId])){
-      updateScores(completedGames[gameId].players,completedGames[gameId].results)
-    }
-  }
-}
+
+
 
 
 function updateScores(players,winner){
