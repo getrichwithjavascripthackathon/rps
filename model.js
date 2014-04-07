@@ -78,6 +78,24 @@ function findMatch(playerPosition,matchFound,noMatch){
   });
 }
 
+exports.getOpponent = function(email,callback){
+	Player.find({email: email},function(err,players){
+		if(err) return console.err(err);
+		var myId = players[0]._id;
+		ActiveGame.find( { players: myId }, function(err,games){
+			if(err) return console.err(err);
+			if(games.length){
+				var players = games[0].players;
+				var opponentId = players[0].equals(myId)? players[1] : players[0];
+				Player.find({_id: opponentId},function(err,players){
+					if(err) return console.err(err);
+					callback(players[0]);
+				});
+			}
+		});
+	});
+}
+
 exports.getPlayersRequestingGames = function(done) {
 	return RequestedGame.find(function(err, requests) {
 		done(requests);
