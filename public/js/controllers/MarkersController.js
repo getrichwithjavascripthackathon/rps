@@ -15,15 +15,13 @@ angular.module('BoShamRowApp').controller('MarkersController', function($scope, 
   }
 
   function updateMyMarker() {
-    coord.lat = myPosition.coords.latitude;
-    coord.lng = myPosition.coords.longitude;
     if (!myMarker) {
       myMarker = new google.maps.Marker({
         map: map,
         icon:icons[Math.floor(Math.random()*icons.length)],
       });
     }
-    myMarker.setPosition(new google.maps.LatLng(coord.lat, coord.lng));
+    myMarker.setPosition(new google.maps.LatLng(myPosition.lat, myPosition.lng));
   }
 
   function updateFakeMarkers() {
@@ -55,7 +53,7 @@ angular.module('BoShamRowApp').controller('MarkersController', function($scope, 
   }
 
   function showMap(_, position) {
-    myPosition = position;
+    myPosition = { lat: position.coords.latitude, lng: position.coords.longitude };
     createMap();
     updateMyMarker();
     updateZoom();
