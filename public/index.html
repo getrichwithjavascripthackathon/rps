@@ -27,7 +27,15 @@
   <script src="core.js"></script>
 </head>
 <body ng-controller="FindMatchController">
-  <div class="full-page" ng-show="showLogin">
+  <div class="full-page" ng-show="show == 'loading'">
+    <div class="progress progress-striped active">
+      <div class="progress-bar-info" style="width: 100%">
+        <span>{{ loadingMessage }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="full-page" ng-show="show == 'login'">
     <div id="login-panel" class="panel panel-default">
       <div class="panel-body">
         <form>
@@ -37,7 +45,7 @@
     </div>
   </div>
 
-  <div ng-show="showMap" id="map-wrapper">
+  <div ng-show="show == 'map'" id="map-wrapper">
     <div id="map-padding">
       <div id="map-canvas" ng-controller="MarkersController"></div>
     </div>
@@ -51,9 +59,10 @@
     <div id="map-footer">
       <button id="find-match" type="button" class="btn btn-warning" ng-click="didClickButton()" ng-hide="findingMatch">Find Match</button>
       <div ng-show="findingMatch">
-        <p ng-show="findingMatch">Finding Match...</p>
         <div class="progress progress-striped active">
-          <div class="progress-bar-success" style="width: 100%"></div>
+          <div class="progress-bar-success" style="width: 100%">
+            <span>Finding Match...</span>
+          </div>
         </div>
       </div>
     </div>

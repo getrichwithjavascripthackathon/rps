@@ -66,7 +66,8 @@ function MarkersController($http) {
 }
 
 app.controller('FindMatchController', function($scope, $http, Facebook) {
-  $scope.showLogin = true;
+  $scope.show = "loading";
+  $scope.loadingMessage = "Waiting for Facebook";
 
   // Here, usually you should watch for when Facebook is ready and loaded
   $scope.$watch(function() {
@@ -74,6 +75,7 @@ app.controller('FindMatchController', function($scope, $http, Facebook) {
   }, function(newVal) {
     if (newVal) {
       console.log("facebook ready: ", newVal);
+      $scope.loadingMessage = undefined;
       $scope.getLoginStatus();
     }
     // $scope.facebookReady = true; // You might want to use this to disable/show/hide buttons and else
@@ -89,30 +91,34 @@ app.controller('FindMatchController', function($scope, $http, Facebook) {
   };
 
   $scope.getLoginStatus = function() {
+    $scope.show = 'loading';
+    $scope.loadingMessage = "Checking for login";
     console.log("start get FB status");
     Facebook.getLoginStatus(function(response) {
+      $scope.loadingMessage = undefined;
       console.log("end get FB status", response);
       if(response.status == 'connected') {
         $scope.$apply(function() {
-          $scope.showLogin = false;
-          $scope.showMap = true;
           $scope.me();
         });
       }
       else {
         $scope.$apply(function() {
-          $scope.showLogin = true;
-          $scope.showMap = false;
+          $scope.show = 'login';
         });
       }
     })};
 
     $scope.me = function() {
+      $scope.show = 'loading';
+      $scope.loadingMessage = 'Loading player info';
       Facebook.api('/me', function(response) {
         $scope.$apply(function() {
           // Here you could re-check for user status (just in case)
           $scope.user = response;
           $scope.user.score = 150;
+          $scope.show = 'map';
+          $scope.loadingMessage = undefined;
         });
       });
     };
