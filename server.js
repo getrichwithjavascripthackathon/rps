@@ -27,6 +27,11 @@ webserver.get('/api/v1/login', function(req, res) {
   });
 });
 
+webserver.post('/api/v1/position', function(req, res) {
+  model.updatePlayerPosition(req.query.email, { lat: req.query.lat, lng: req.query.lng });
+  res.send(200);
+});
+
 webserver.post('/api/v1/match_requests', function(req, res) {
   model.requestGame(req.query.email);
   res.send(200);
@@ -43,4 +48,3 @@ webserver.listen(webserverPort);
 console.log("RPSing on port http://localhost:" + webserverPort);
 
 // === send email test
-
