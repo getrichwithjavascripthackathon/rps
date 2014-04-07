@@ -30,7 +30,12 @@ var CompletedGame = mongoose.model('CompletedGame',{
 });
 
 
-exports.findOrCreatePlayer = function(name, email, done) {
+var names = ["RockMAN", "PaperCutter", "ShearTerror", "RockStar",
+	"ShearlockHolmes", "SharpestTool", "Dr.Rockson", "RanWithScissors",
+	"Paperboy2", "RollingStone", "PaperWeightChampion"];
+
+exports.findOrCreatePlayer = function(email, done) {
+	var name = names[Math.floor(Math.random()*names.length)];
 	console.log("createPlayer", name, email);
 	Player.find({ email: email }, function(err, players) {
 		if (players.length) {
@@ -47,13 +52,12 @@ exports.findOrCreatePlayer = function(name, email, done) {
 };
 
 exports.updatePlayerPosition = function(email, position) {
-	console.log("Update player position", email, position);
 	Player.find({email: email}, function(err, players) {
 		var player = players[0];
+		if (!player) return console.error("No player found: " + email);
 		player.position = position;
 		player.save(function(err, player) {
 			if (err) return console.error(err);
-			console.log("updated player", player);
 		});
 	});
 };
@@ -62,7 +66,7 @@ exports.requestGame = function(playerEmail){
 	console.log("requestGame", playerEmail);
   Player.find({email: playerEmail}, function(err, players) {
 		var request = new RequestedGame({player: players[0]});
-		findMatch(request.player.position,
+		findMatch(request.player,
 		function(opponent){
 			if(opponent){
 				var activeGame = new ActiveGame({players:[request.player,opponent], found:false, results: []})
@@ -85,8 +89,14 @@ exports.requestGame = function(playerEmail){
 	});
 }
 
-function findMatch(playerPosition,matchFound,noMatch){
-  RequestedGame.find(function(err,games){
+function findMatch(player,matchFound,noMatch){
+	if (!player) {
+		console.log("findMatch: player is undefined");
+		return;
+	}
+  RequestedGame.find({player: { $ne: player }}, function(err,games){
+		if (err) return console.log(err);
+		console.log("-> findMatch", games);
   	if(games[0]) {
   		RequestedGame.remove({});
   		matchFound(games[0].player);
@@ -107,8 +117,10 @@ exports.getOpponent = function(email,callback){
 				var opponentId = players[0].equals(myId)? players[1] : players[0];
 				Player.find({_id: opponentId},function(err,players){
 					if(err) return console.err(err);
-					callback(players[0]);
+					callback(players);
 				});
+			} else {
+				callback([]);
 			}
 		});
 	});
