@@ -20,14 +20,15 @@ function get_location() {
 var app = angular.module('BoShamRowApp', ['facebook']);
 
 app.config(['FacebookProvider', function(FacebookProvider) {
-     FacebookProvider.init('1417732778486013');
+  FacebookProvider.init('1417732778486013');
 }]);
 
-function MarkersController($http) {
+app.controller('MarkersController', function($scope, $http) {
   var icons = ['/img/rock-small.png','/img/paper-small.png','/img/scissors-small.png']
 	var bounds = new google.maps.LatLngBounds();
 
-  function showMap(position) {
+  function showMap(_, position) {
+    console.log("got position in MarkersController", position);
     coord.lat = position.coords.latitude;
     coord.lon = position.coords.longitude;
     console.log(position);
@@ -60,12 +61,11 @@ function MarkersController($http) {
 	      map.fitBounds(bounds);
 	    })
   }
-  if (Modernizr.geolocation) {
-    navigator.geolocation.getCurrentPosition(showMap);
-  }
-}
 
-app.controller('FindMatchController', function($scope, $http, Facebook) {
+  $scope.$on('currentPosition', showMap);
+});
+
+app.controller('FindMatchController', function($scope, $http, Facebook, Login) {
   $scope.show = "loading";
   $scope.loadingMessage = "Waiting for Facebook";
 
@@ -87,41 +87,24 @@ app.controller('FindMatchController', function($scope, $http, Facebook) {
     Facebook.login(function(response) {
       console.log("Finished FB login");
       $scope.getLoginStatus();
-    });
+    }, {scope: 'email'});
   };
 
   $scope.getLoginStatus = function() {
     $scope.show = 'loading';
     $scope.loadingMessage = "Checking for login";
     console.log("start get FB status");
-    Facebook.getLoginStatus(function(response) {
+    Login.checkLogin(function(user) {
+      $scope.user = user;
+      $scope.user.score = 150;
+      $scope.show = 'map';
       $scope.loadingMessage = undefined;
-      console.log("end get FB status", response);
-      if(response.status == 'connected') {
-        $scope.$apply(function() {
-          $scope.me();
-        });
-      }
-      else {
-        $scope.$apply(function() {
-          $scope.show = 'login';
-        });
-      }
-    })};
-
-    $scope.me = function() {
-      $scope.show = 'loading';
-      $scope.loadingMessage = 'Loading player info';
-      Facebook.api('/me', function(response) {
-        $scope.$apply(function() {
-          // Here you could re-check for user status (just in case)
-          $scope.user = response;
-          $scope.user.score = 150;
-          $scope.show = 'map';
-          $scope.loadingMessage = undefined;
-        });
+    }, function() {
+      $scope.$apply(function() {
+        $scope.show = 'login';
       });
-    };
+    });
+  };
 
   $scope.didClickButton = function () {
     $scope.findingMatch = true;

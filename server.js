@@ -11,6 +11,7 @@ var credentials = {
 var webserverPort = process.env.PORT || 9400;
 webserver.configure(function() {
 	webserver.use(express.static(__dirname + '/public'));
+  webserver.use(express.bodyParser());
 	webserver.use(express.logger('dev'));
 });
 
@@ -28,8 +29,13 @@ webserver.get('/api/v1/login', function(req, res) {
 });
 
 webserver.post('/api/v1/position', function(req, res) {
-  model.updatePlayerPosition(req.query.email, { lat: req.query.lat, lng: req.query.lng });
-  res.send(200);
+  console.log(req.body);
+  if (!req.body.email) {
+    res.send(400);
+  } else {
+    model.updatePlayerPosition(req.body.email, req.body.position);
+    res.send(200);
+  }
 });
 
 webserver.post('/api/v1/match_requests', function(req, res) {

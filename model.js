@@ -45,6 +45,7 @@ exports.updatePlayerPosition = function(email, position) {
 	console.log("Update player position", email, position);
 	Player.find({email: email}, function(err, players) {
 		var player = players[0];
+		if (!player) return console.error("No player found: " + email);
 		player.position = position;
 		player.save(function(err, player) {
 			if (err) return console.error(err);
