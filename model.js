@@ -98,7 +98,7 @@ function findMatch(player,matchFound,noMatch){
 		if (err) return console.log(err);
 		console.log("-> findMatch", games);
   	if(games[0]) {
-  		RequestedGame.remove({});
+  		games[0].remove()
   		matchFound(games[0].player);
   	} else{
   		noMatch();
@@ -149,7 +149,8 @@ exports.reportMatch = function(email,iWon){
 				completedGame.save(function(err,completedGame){
 					console.log('Game completed',completedGame);
 				});
-				ActiveGame.remove({_id: games[0]._id});
+				games[0].remove();
+				console.log(games[0]._id);
 			}
 		});
 	});
