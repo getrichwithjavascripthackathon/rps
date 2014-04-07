@@ -1,12 +1,7 @@
 var model = require('./model');
 var express   = require('express');
 var webserver = express();
-var credentials = {
-  gmail: {
-    user: process.env.GMAIL__USER,
-    password: process.env.GMAIL__PASSWORD
-  }
-};
+
 
 var webserverPort = process.env.PORT || 9400;
 webserver.configure(function() {
@@ -50,7 +45,13 @@ webserver.get('/api/v1/match_requests', function(req, res) {
   });
 });
 
+webserver.get('/api/v1/active_games',function(req,res){
+  console.log("Finding active games");
+  model.getOpponent(req.query.email,function(opponent){
+    console.log('I need a real function!');
+    res.send(opponent)
+  });
+})
+
 webserver.listen(webserverPort);
 console.log("RPSing on port http://localhost:" + webserverPort);
-
-// === send email test
