@@ -1,3 +1,5 @@
+var emails = require('./emails');
+
 var mongoose = require('mongoose');
 mongoose.connect(process.env.MONGOHQ_URL || 'mongodb://localhost/rps_dev');
 
@@ -24,13 +26,11 @@ var completedGames = {};
 
 exports.findOrCreatePlayer = function(name, email, done) {
 	console.log("createPlayer", name, email);
-
 	Player.find({ email: email }, function(err, players) {
 		if (players.length) {
 			done(players[0]);
 		} else {
 			var player = new Player({name: name, email: email, score: 0, wins: 0, losses: 0});
-
 			player.save(function (err, savedPlayer) {
 				if (err) return console.error(err);
 				console.log("saved player", savedPlayer);
@@ -42,38 +42,38 @@ exports.findOrCreatePlayer = function(name, email, done) {
 
 exports.requestGame = function(playerEmail){
 	console.log("requestGame", playerEmail);
-	// TODO: bring back this logic
-	// if(playersRequestingGames.length) {
-	// 	startMatch(userId,playersRequestingGames.shift());
-	// } else {
-	  Player.find({email: playerEmail}, function(err, players) {
-			var request = new RequestedGame({player: players[0]});
-			console.log(request);
-			console.log(players);
-			findMatch(request.player.position,function(opponent){
-				if(opponent){
-					var activeGame = new ActiveGame({players:[request.player,opponent], found:false, results: []})
-					activeGame.save(function(err,savedGame){
-						if(err) return console.error(err);
-						console.log("saved game", savedGame);
-					});
-				}  else{
-					request.save(function(err, savedRequest) {
-						if (err) return console.error(err);
-						console.log("saved request", savedRequest);
-					});
-				}
-			})
-			
+  Player.find({email: playerEmail}, function(err, players) {
+		var request = new RequestedGame({player: players[0]});
+		findMatch(request.player.position,
+		function(opponent){
+			if(opponent){
+				var activeGame = new ActiveGame({players:[request.player,opponent], found:false, results: []})
+				activeGame.save(function(err,savedGame){
+					if(err) {return console.error(err)}
+					console.log("saved game", savedGame);
+				Player.find({_id: {$in: [activeGame.players[0],activeGame.players[1]]}},function(err,players){
+					if(err){return console.error(err)};
+					emails.sendMatchEmail(players[0], players[1]);
+				})
+				
+				});
+			}
+		},function(){
+				request.save(function(err, savedRequest) {
+					if (err) return console.error(err);
+					console.log("saved request", savedRequest);
+				});
 		});
-	// }
+	});
 }
 
-function findMatch(playerPosition,done){
+function findMatch(playerPosition,matchFound,noMatch){
   RequestedGame.find(function(err,games){
   	if(games[0]) {
   		RequestedGame.remove({});
-  		done(games[0].player);
+  		matchFound(games[0].player);
+  	} else{
+  		noMatch();
   	}
   });
 }
@@ -82,14 +82,6 @@ exports.getPlayersRequestingGames = function(done) {
 	return RequestedGame.find(function(err, requests) {
 		done(requests);
 	});
-}
-
-function startMatch(p1, p2){
-	var gameId = 'g' + nextGame;
-	activeGames[gameId] = new Game(p1,p2);
-	nextGame++;
-	playerData[p1].currentGame = gameId;
-	playerData[p2].currentGame = gameId;
 }
 
 function playersFound(gameId){
