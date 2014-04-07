@@ -3,7 +3,7 @@
 angular.module('BoShamRowApp').service('Geolocation', function($rootScope, $timeout) {
 
   function getLocation() {
-    console.log("-> getLocation");
+    console.log("Updating geolocation");
     if (Modernizr.geolocation) {
       navigator.geolocation.getCurrentPosition(function(position) {
         $rootScope.$broadcast('currentPosition', position);
