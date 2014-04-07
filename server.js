@@ -28,7 +28,7 @@ webserver.get('/api/v1/login', function(req, res) {
 });
 
 webserver.post('/api/v1/match_requests', function(req, res) {
-  model.requestGame("u1@example.com");
+  model.requestGame(req.query.email);
   res.send(200);
 });
 

@@ -15,16 +15,12 @@ var RequestedGame = mongoose.model('RequestedGame', {
 	requestedAt: {type: Date, required: true, default: Date}
 });
 
-var activeGames = {};
+var ActiveGame = mongoose.model('ActiveGame',{
+	players:[{type: mongoose.Schema.ObjectId, ref: 'Player', required: true}], found: Boolean, results: Array});
+
 var completedGames = {};
 
-function Game(p1,p2){
-  this.players = [p1,p2];
-  this.found = false;
-  this.results = [];
-}
 
-var nextGame = 1;
 
 exports.findOrCreatePlayer = function(name, email, done) {
 	console.log("createPlayer", name, email);
@@ -46,19 +42,40 @@ exports.findOrCreatePlayer = function(name, email, done) {
 
 exports.requestGame = function(playerEmail){
 	console.log("requestGame", playerEmail);
-
 	// TODO: bring back this logic
 	// if(playersRequestingGames.length) {
 	// 	startMatch(userId,playersRequestingGames.shift());
 	// } else {
 	  Player.find({email: playerEmail}, function(err, players) {
 			var request = new RequestedGame({player: players[0]});
-			request.save(function(err, savedRequest) {
-				if (err) return console.error(err);
-				console.log("saved request", savedRequest);
-			});
+			console.log(request);
+			console.log(players);
+			findMatch(request.player.position,function(opponent){
+				if(opponent){
+					var activeGame = new ActiveGame({players:[request.player,opponent], found:false, results: []})
+					activeGame.save(function(err,savedGame){
+						if(err) return console.error(err);
+						console.log("saved game", savedGame);
+					});
+				}  else{
+					request.save(function(err, savedRequest) {
+						if (err) return console.error(err);
+						console.log("saved request", savedRequest);
+					});
+				}
+			})
+			
 		});
 	// }
+}
+
+function findMatch(playerPosition,done){
+  RequestedGame.find(function(err,games){
+  	if(games[0]) {
+  		RequestedGame.remove({});
+  		done(games[0].player);
+  	}
+  });
 }
 
 exports.getPlayersRequestingGames = function(done) {
