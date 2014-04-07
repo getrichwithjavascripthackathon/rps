@@ -18,11 +18,12 @@ var RequestedGame = mongoose.model('RequestedGame', {
 });
 
 var ActiveGame = mongoose.model('ActiveGame',{
-	players:[{type: mongoose.Schema.ObjectId, ref: 'Player', required: true}], found: Boolean, results: Array});
+	players:[{type: mongoose.Schema.ObjectId, ref: 'Player', required: true}],
+	found: Boolean,
+	results: Array
+});
 
 var completedGames = {};
-
-
 
 exports.findOrCreatePlayer = function(name, email, done) {
 	console.log("createPlayer", name, email);
@@ -33,12 +34,24 @@ exports.findOrCreatePlayer = function(name, email, done) {
 			var player = new Player({name: name, email: email, score: 0, wins: 0, losses: 0});
 			player.save(function (err, savedPlayer) {
 				if (err) return console.error(err);
-				console.log("saved player", savedPlayer);
+				console.log("created player", savedPlayer);
 				done(savedPlayer);
 			});
 		}
 	});
-}
+};
+
+exports.updatePlayerPosition = function(email, position) {
+	console.log("Update player position", email, position);
+	Player.find({email: email}, function(err, players) {
+		var player = players[0];
+		player.position = position;
+		player.save(function(err, player) {
+			if (err) return console.error(err);
+			console.log("updated player", player);
+		});
+	});
+};
 
 exports.requestGame = function(playerEmail){
 	console.log("requestGame", playerEmail);
@@ -55,7 +68,7 @@ exports.requestGame = function(playerEmail){
 					if(err){return console.error(err)};
 					emails.sendMatchEmail(players[0], players[1]);
 				})
-				
+
 				});
 			}
 		},function(){
