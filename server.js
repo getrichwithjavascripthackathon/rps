@@ -49,7 +49,7 @@ webserver.get('/api/v1/active_games',function(req,res){
 
 webserver.post('/api/v1/completed_games',function(req,res){
   console.log("Storing results");
-  model.reportMatch(req.query.email,req.query.iWon);
+  model.reportMatchResults(req.query.email,req.query.iWon);
   res.send(200);
 })
 

@@ -132,7 +132,7 @@ exports.getPlayersRequestingGames = function(done) {
 	});
 }
 
-exports.reportMatch = function(email,iWon){
+exports.reportMatchResults = function(email,iWon){
 	Player.find({email:email},function(err,players){
 		if(err) return console.error(err);
 		var myId = players[0].id;
@@ -143,19 +143,22 @@ exports.reportMatch = function(email,iWon){
 				if (err) return console.error(err);
 				console.log("updated results", updatedResults);
 			});
-
 			if(games[0].results.length == 2){
-				var winner = validateResults(games[0].results)
-				var completedGame = new CompletedGame({players: games[0].players, results: winner}) 
-				completedGame.save(function(err,completedGame){
-					console.log('Game completed',completedGame);
-				});
-				games[0].remove();
-				console.log(games[0]._id);
-				updateScores(games[0].players,winner);
+				endMatch(games[0]);
 			}
 		});
 	});
+}
+
+function endMatch(game){
+	var winner = validateResults(game.results)
+	var completedGame = new CompletedGame({players: game.players, results: winner}) 
+	completedGame.save(function(err,completedGame){
+		console.log('Game completed',completedGame);
+	});
+	game.remove();
+	console.log(game._id);
+	updateScores(game.players,winner);
 }
 
 function validateResults(results){
@@ -186,16 +189,3 @@ function updateScores(players,winner){
 		});
 	}
 }
-
-
-
-function playersFound(gameId){
-	activeGames[gameId].found = true;
-}
-
-
-
-
-
-
-
