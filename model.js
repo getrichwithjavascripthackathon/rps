@@ -108,15 +108,15 @@ function findMatch(player,matchFound,noMatch){
 
 exports.getOpponent = function(email,callback){
 	Player.find({email: email},function(err,players){
-		if(err) return console.err(err);
+		if(err) return console.error(err);
 		var myId = players[0]._id;
 		ActiveGame.find( { players: myId }, function(err,games){
-			if(err) return console.err(err);
+			if(err) return console.error(err);
 			if(games.length){
 				var players = games[0].players;
 				var opponentId = players[0].equals(myId)? players[1] : players[0];
 				Player.find({_id: opponentId},function(err,players){
-					if(err) return console.err(err);
+					if(err) return console.error(err);
 					callback(players);
 				});
 			} else {
@@ -134,10 +134,10 @@ exports.getPlayersRequestingGames = function(done) {
 
 exports.reportMatch = function(email,iWon){
 	Player.find({email:email},function(err,players){
-		if(err) return console.err(err);
+		if(err) return console.error(err);
 		var myId = players[0].id;
 		ActiveGame.find({players: myId},function(err,games){
-			if(err) return console.err(err);
+			if(err) return console.error(err);
 			games[0].results.push({user:myId,iWon:iWon});
 			games[0].save(function(err,updatedResults){
 				if (err) return console.error(err);
@@ -145,12 +145,14 @@ exports.reportMatch = function(email,iWon){
 			});
 
 			if(games[0].results.length == 2){
-				var completedGame = new CompletedGame({players: games[0].players, results: validateResults(games[0].results)}) 
+				var winner = validateResults(games[0].results)
+				var completedGame = new CompletedGame({players: games[0].players, results: winner}) 
 				completedGame.save(function(err,completedGame){
 					console.log('Game completed',completedGame);
 				});
 				games[0].remove();
 				console.log(games[0]._id);
+				updateScores(games[0].players,winner);
 			}
 		});
 	});
@@ -165,8 +167,25 @@ function validateResults(results){
 	return winner;
 }
 
-
-
+function updateScores(players,winner){
+	if(winner){
+		players.forEach(function(player){
+			Player.find({_id:player},function(err,players){
+				if(err) console.error(err);
+				if(players[0]._id.equals(winner)){
+					players[0].score += 3;
+					players[0].wins += 1;
+				}	else {
+					players[0].score += 2;
+					players[0].losses += 1;
+				}
+				players[0].save(function(err,updatedScores){
+					console.log('Scores updates',updatedScores);
+				})
+			})
+		});
+	}
+}
 
 
 
@@ -179,15 +198,4 @@ function playersFound(gameId){
 
 
 
-function updateScores(players,winner){
-  players.forEach(function(player){
-  	var user = playerData[player]
-    if(player == winner){
-    	user.score += 3;
-    	user.wins ++;
-    }  else {
-    	user.score += 2;
-    	user.losses ++;
-    }
-  })
-}
+
