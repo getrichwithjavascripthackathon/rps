@@ -66,27 +66,28 @@ exports.requestGame = function(playerEmail){
 	console.log("requestGame", playerEmail);
   Player.find({email: playerEmail}, function(err, players) {
 		var request = new RequestedGame({player: players[0]});
-		findMatch(request.player,
-		function(opponent){
-			if(opponent){
-				var activeGame = new ActiveGame({players:[request.player,opponent], found:false, results: []})
-				activeGame.save(function(err,savedGame){
-					if(err) {return console.error(err)}
-					console.log("saved game", savedGame);
-				Player.find({_id: {$in: [activeGame.players[0],activeGame.players[1]]}},function(err,players){
-					if(err){return console.error(err)};
-					emails.sendMatchEmail(players[0], players[1]);
-				})
-
-				});
-			}
-		},function(){
+		findMatch(request.player, createGame,
+		function(){
 				request.save(function(err, savedRequest) {
 					if (err) return console.error(err);
 					console.log("saved request", savedRequest);
 				});
 		});
 	});
+}
+
+function createGame(player,opponent){
+	if(opponent){
+		var activeGame = new ActiveGame({players:[player,opponent], found:false, results: []})
+		activeGame.save(function(err,savedGame){
+			if(err) {return console.error(err)}
+			console.log("saved game", savedGame);
+			Player.find({_id: {$in: [activeGame.players[0],activeGame.players[1]]}},function(err,players){
+				if(err){return console.error(err)};
+				emails.sendMatchEmail(players[0], players[1]);
+			})
+		});
+	}
 }
 
 function findMatch(player,matchFound,noMatch){
@@ -99,7 +100,7 @@ function findMatch(player,matchFound,noMatch){
 		console.log("-> findMatch", games);
   	if(games[0]) {
   		games[0].remove()
-  		matchFound(games[0].player);
+  		matchFound(player,games[0].player);
   	} else{
   		noMatch();
   	}
